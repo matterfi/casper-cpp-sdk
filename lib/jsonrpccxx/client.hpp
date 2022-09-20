@@ -39,6 +39,7 @@ namespace jsonrpccxx {
     version v;
 
     JsonRpcResponse call_method(const id_type &id, const std::string &name, const json &params) {
+      SPDLOG_DEBUG("Calling: {} method with id: {} and params: {} ", name, id, params);
       json j = {{"method", name}};
       if (std::get_if<int>(&id) != nullptr) {
         j["id"] = std::get<int>(id);
