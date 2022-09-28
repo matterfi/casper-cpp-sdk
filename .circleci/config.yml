@@ -49,6 +49,7 @@ commands:
           command: |
             if [ ! -d *path_vcpkg_bin_lin ]; then
               echo "vcpkg-binaries not present, building..."
+              echo *path_vcpkg_bin_lin
             else
               echo "vcpkg-binaries restored from cache, skipping build :)"
             fi
