@@ -48,16 +48,19 @@ commands:
       #    name: "restore cache vcpkg binaries"
       #    key: *cache_vcpkg_lin
       - run:
-          name: "configure vcpkg & build deps"
+          name: "configure vcpkg & build deps inside docker image"
           no_output_timeout: 40m
           working_directory: "~/"
           command: |
             if [ ! -d <<pipeline.parameters.path_vcpkg_bin_lin>> ]; then
+
               echo "vcpkg-binaries not present, building..."
-              echo <<pipeline.parameters.path_vcpkg_bin_lin>>
+              mkdir <<pipeline.parameters.path_vcpkg_bin_lin>>
+              
               git clone git@github.com:microsoft/vcpkg.git
               cd vcpkg
               git checkout 2022.09.27
+              
               docker run \
                 -dit \
                 --name dck-flh-executor \
