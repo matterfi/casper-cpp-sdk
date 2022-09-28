@@ -1,7 +1,10 @@
 version: 2.1
 
 configuration:
+  - xcode_version: &xcode_version 13.4.1
   - ubuntu_version: &ubuntu_version ubuntu-2004:current
+  - cache_vcpkg_lin: &cache_vcpkg_lin cache_vcpkg_lin-v1-{{ checksum "~/project/vcpkg/vcpkg.txt" }}
+  - path_vcpkg_bin_lin: &path_vcpkg_bin_lin /home/distiller/vcpkg-binaries
 
 parameters:
   docker-image-casper-cpp-sdk:
@@ -9,14 +12,22 @@ parameters:
     type: string
 
 executors:
+  executor_macos:
+    macos:
+      xcode: *xcode_version
+    resource_class: macos.x86.medium.gen2
   executor_ubuntu_large:
     machine:
       image: *ubuntu_version
     resource_class: xlarge
+  executor_ubuntu_small:
+    machine:
+      image: *ubuntu_version
+    resource_class: medium
       
 commands:
-  cmd_prepare_env:
-    description: "command to prepare all build dependencies: code, vcpkg, tools"
+  cmd_lin_prepare_env:
+    description: "command to prepare basic build env"
     parameters:
       docker-image:
         type: string
@@ -25,16 +36,37 @@ commands:
           name: "pull docker image"
           command: docker pull <<parameters.docker-image>>
       - checkout
-            
+  cmd_lin_build_vcpkg:
+    description: "command to build vcpkg deps"
+    steps:
+      - restore_cache:
+          name: "restore cache vcpkg binaries"
+          key: *cache_vcpkg_lin
+      - run:
+          name: "configure vcpkg & build deps"
+          no_output_timeout: 40m
+          working_directory: "~/project/"
+          command: |
+            if [ ! -d *path_vcpkg_bin_lin ]; then
+              echo "vcpkg-binaries not present, building..."
+            else
+              echo "vcpkg-binaries restored from cache, skipping build :)"
+            fi
+      - save_cache:
+          name: "save cache vcpkg binaries"
+          key: *cache_vcpkg_lin
+          paths:
+            - *path_vcpkg_bin_lin
 jobs:
   build-linux:
     parameters:
       docker-image:
         type: string
-    executor: executor_ubuntu_large
+    executor: executor_ubuntu_small
     steps:
-      - cmd_prepare_env:
+      - cmd_lin_prepare_env:
           docker-image: <<parameters.docker-image>>
+      - cmd_lin_build_vcpkg
 
 workflows:
   casper-cpp-sdk-linux:
