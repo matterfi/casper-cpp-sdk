@@ -68,8 +68,15 @@ commands:
                 --mount type=bind,src=/home/circleci/project/vcpkg,dst=/home/deps-list \
                 --mount type=bind,src=<<pipeline.parameters.path_vcpkg_bin_lin>>,dst=/home/install \
                 <<parameters.docker-image>>
+
               docker exec -w /home/vcpkg dck-flh-executor \
-                ls -a triplets
+                ./bootstrap-vcpkg.sh -disableMetrics
+
+              docker exec -w /home/vcpkg dck-flh-executor \
+                ./vcpkg install @/home/deps-list/vcpkg.txt --triplet=x64-linux --clean-after-build
+
+              docker exec -w /home/vcpkg dck-flh-executor \
+                ./vcpkg export @/home/deps-list/vcpkg.txt --raw --triplet=x64-linux --output-dir=/home/install --output=vcpkg-binaries
             else
               echo "vcpkg-binaries restored from cache, skipping build :)"
             fi
