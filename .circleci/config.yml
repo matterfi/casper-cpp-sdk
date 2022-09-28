@@ -1,0 +1,92 @@
+version: 2.1
+
+configuration:
+  - ubuntu_version: &ubuntu_version ubuntu-2004:current
+
+parameters:
+  docker-image-tangem:
+    default: "polishcode/matterfi-tangem-fedora:36-1"
+    type: string
+
+executors:
+  executor_ubuntu_large:
+    machine:
+      image: *ubuntu_version
+    resource_class: xlarge
+      
+commands:
+  cmd_prepare_env:
+    description: "command to prepare all build dependencies: code, submodules, tools"
+    parameters:
+      docker-image:
+        type: string
+    steps:
+      - run:
+          name: "pull docker image"
+          command: docker pull <<parameters.docker-image>>
+      - checkout
+  cmd_build_linux:
+    description: "command to build tangem for linux in docker"
+    parameters:
+      docker-image:
+        type: string
+    steps:
+      - run:
+          name: "start container"
+          command: |
+            docker run \
+              -dit \
+              --name dck-flh-executor \
+              --mount type=bind,src=/home/circleci/project,dst=/home/src \
+              <<parameters.docker-image>>
+      - run:
+          name: "configure"
+          command: |
+            docker exec -w /home/src dck-flh-executor \
+              cmake -B cmake-build-debug -H. -GNinja
+      - run:
+          name: "build"
+          command: |
+            docker exec -w /home/src/cmake-build-debug dck-flh-executor \
+              ninja
+      - run:
+          name: "test"
+          command: |
+            docker exec -w /home/src/cmake-build-debug dck-flh-executor \
+              ninja test
+      - run:
+          name: "stop container"
+          command: |
+            docker stop dck-flh-executor
+            
+jobs:
+  build-linux:
+    parameters:
+      docker-image:
+        type: string
+    executor: executor_ubuntu_large
+    steps:
+      - cmd_prepare_env:
+          docker-image: <<parameters.docker-image>>
+      - cmd_build_linux:
+          docker-image: <<parameters.docker-image>>
+
+workflows:
+  casper-cpp-sdk-linux:
+    when: false
+    jobs:
+      - build-linux:
+          name: build & test on linux
+          docker-image: <<pipeline.parameters.docker-image-tangem>>
+  casper-cpp-sdk-macos:
+    when: false
+    jobs:
+      - build-linux:
+          name: build & test on linux
+          docker-image: <<pipeline.parameters.docker-image-tangem>>
+  casper-cpp-sdk-windows:
+    when: false
+    jobs:
+      - build-linux:
+          name: build & test on linux
+          docker-image: <<pipeline.parameters.docker-image-tangem>>
