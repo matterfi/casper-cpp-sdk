@@ -10,7 +10,7 @@ parameters:
     default: "polishcode/matterfi-casper-cpp-sdk-ubuntu:1"
     type: string
   path_vcpkg_bin_lin:
-    default: "/home/distiller/vcpkg-binaries"
+    default: "/home/circleci/vcpkg-binaries"
     type: string
 
 executors:
@@ -40,6 +40,9 @@ commands:
       - checkout
   cmd_lin_build_vcpkg:
     description: "command to build vcpkg deps"
+    parameters:
+      docker-image:
+        type: string
     steps:
       #- restore_cache:
       #    name: "restore cache vcpkg binaries"
@@ -55,7 +58,15 @@ commands:
               git clone git@github.com:microsoft/vcpkg.git
               cd vcpkg
               git checkout 2022.09.27
-
+              docker run \
+                -dit \
+                --name dck-flh-executor \
+                --mount type=bind,src=/home/circleci/vcpkg,dst=/home/vcpkg \
+                --mount type=bind,src=/home/circleci/project/vcpkg,dst=/home/deps-list \
+                --mount type=bind,src=<<pipeline.parameters.path_vcpkg_bin_lin>>,dst=/home/install \
+                <<parameters.docker-image>>
+              docker exec -w /home/vcpkg dck-flh-executor \
+                ls -a triplets
             else
               echo "vcpkg-binaries restored from cache, skipping build :)"
             fi
@@ -73,7 +84,8 @@ jobs:
     steps:
       - cmd_lin_prepare_env:
           docker-image: <<parameters.docker-image>>
-      - cmd_lin_build_vcpkg
+      - cmd_lin_build_vcpkg:
+          docker-image: <<parameters.docker-image>>
 
 workflows:
   casper-cpp-sdk-linux:
