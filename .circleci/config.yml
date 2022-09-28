@@ -47,7 +47,7 @@ commands:
       - run:
           name: "configure vcpkg & build deps"
           no_output_timeout: 40m
-          working_directory: "~/project/"
+          working_directory: "~/"
           command: |
             if [ ! -d <<pipeline.parameters.path_vcpkg_bin_lin>> ]; then
               echo "vcpkg-binaries not present, building..."
