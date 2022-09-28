@@ -10,6 +10,9 @@ parameters:
   docker-image-casper-cpp-sdk:
     default: "polishcode/matterfi-casper-cpp-sdk-ubuntu:1"
     type: string
+  path_vcpkg_bin_lin:
+    default: "/home/distiller/vcpkg-binaries"
+    type: string
 
 executors:
   executor_macos:
@@ -47,9 +50,9 @@ commands:
           no_output_timeout: 40m
           working_directory: "~/project/"
           command: |
-            if [ ! -d *path_vcpkg_bin_lin ]; then
+            if [ ! -d <<pipeline.parameters.path_vcpkg_bin_lin>> ]; then
               echo "vcpkg-binaries not present, building..."
-              echo *path_vcpkg_bin_lin
+              echo <<pipeline.parameters.path_vcpkg_bin_lin>>
             else
               echo "vcpkg-binaries restored from cache, skipping build :)"
             fi
@@ -57,7 +60,7 @@ commands:
           name: "save cache vcpkg binaries"
           key: *cache_vcpkg_lin
           paths:
-            - *path_vcpkg_bin_lin
+            - <<pipeline.parameters.path_vcpkg_bin_lin>>
 jobs:
   build-linux:
     parameters:
