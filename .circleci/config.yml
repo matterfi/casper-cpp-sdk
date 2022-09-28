@@ -4,7 +4,6 @@ configuration:
   - xcode_version: &xcode_version 13.4.1
   - ubuntu_version: &ubuntu_version ubuntu-2004:current
   - cache_vcpkg_lin: &cache_vcpkg_lin cache_vcpkg_lin-v1-{{ checksum "~/project/vcpkg/vcpkg.txt" }}
-  - path_vcpkg_bin_lin: &path_vcpkg_bin_lin /home/distiller/vcpkg-binaries
 
 parameters:
   docker-image-casper-cpp-sdk:
@@ -35,16 +34,16 @@ commands:
       docker-image:
         type: string
     steps:
-      - run:
-          name: "pull docker image"
-          command: docker pull <<parameters.docker-image>>
+      #- run:
+      #    name: "pull docker image"
+      #    command: docker pull <<parameters.docker-image>>
       - checkout
   cmd_lin_build_vcpkg:
     description: "command to build vcpkg deps"
     steps:
-      - restore_cache:
-          name: "restore cache vcpkg binaries"
-          key: *cache_vcpkg_lin
+      #- restore_cache:
+      #    name: "restore cache vcpkg binaries"
+      #    key: *cache_vcpkg_lin
       - run:
           name: "configure vcpkg & build deps"
           no_output_timeout: 40m
@@ -53,6 +52,10 @@ commands:
             if [ ! -d <<pipeline.parameters.path_vcpkg_bin_lin>> ]; then
               echo "vcpkg-binaries not present, building..."
               echo <<pipeline.parameters.path_vcpkg_bin_lin>>
+              git clone git@github.com:microsoft/vcpkg.git
+              cd vcpkg
+              git checkout 2022.09.27
+
             else
               echo "vcpkg-binaries restored from cache, skipping build :)"
             fi
