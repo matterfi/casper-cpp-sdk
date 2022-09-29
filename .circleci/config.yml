@@ -3,7 +3,7 @@ version: 2.1
 configuration:
   - xcode_version: &xcode_version 13.4.1
   - ubuntu_version: &ubuntu_version ubuntu-2004:current
-  - cache_vcpkg_lin: &cache_vcpkg_lin cache_vcpkg_lin-v1-{{ checksum "~/project/vcpkg/vcpkg.txt" }}
+  - cache_vcpkg_lin: &cache_vcpkg_lin cache_vcpkg_lin-v01-{{checksum "~/project/vcpkg/vcpkg.txt"}}
 
 parameters:
   docker-image-casper-cpp-sdk:
@@ -62,8 +62,8 @@ commands:
               git checkout 2022.08.15
 
               ./bootstrap-vcpkg.sh -disableMetrics
-              ./vcpkg install @~/project/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
-              ./vcpkg export @~/project/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=/home/circleci --output=vcpkg-binaries
+              ./vcpkg install @/home/circleci/project/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
+              ./vcpkg export @/home/circleci/project/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=/home/circleci --output=vcpkg-binaries
             else
               echo "vcpkg-binaries restored from cache, skipping build :)"
             fi
