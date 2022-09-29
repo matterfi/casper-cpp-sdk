@@ -48,7 +48,7 @@ commands:
       #    name: "restore cache vcpkg binaries"
       #    key: *cache_vcpkg_lin
       - run:
-          name: "configure vcpkg & build deps inside docker image"
+          name: "configure vcpkg & build deps"
           no_output_timeout: 40m
           working_directory: "~/"
           command: |
@@ -59,24 +59,11 @@ commands:
               
               git clone git@github.com:microsoft/vcpkg.git
               cd vcpkg
-              git checkout 2022.09.27
-              
-              docker run \
-                -dit \
-                --name dck-flh-executor \
-                --mount type=bind,src=/home/circleci/vcpkg,dst=/home/vcpkg \
-                --mount type=bind,src=/home/circleci/project/vcpkg,dst=/home/deps-list \
-                --mount type=bind,src=<<pipeline.parameters.path_vcpkg_bin_lin>>,dst=/home/install \
-                <<parameters.docker-image>>
+              git checkout 2022.08.15
 
-              docker exec -w /home/vcpkg dck-flh-executor \
-                ./bootstrap-vcpkg.sh -disableMetrics
-
-              docker exec -w /home/vcpkg dck-flh-executor \
-                ./vcpkg install @/home/deps-list/vcpkg.txt --triplet=x64-linux --clean-after-build
-
-              docker exec -w /home/vcpkg dck-flh-executor \
-                ./vcpkg export @/home/deps-list/vcpkg.txt --raw --triplet=x64-linux --output-dir=/home/install --output=vcpkg-binaries
+              ./bootstrap-vcpkg.sh -disableMetrics
+              ./vcpkg install @~/project/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
+              ./vcpkg export @~/project/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=/home/circleci --output=vcpkg-binaries
             else
               echo "vcpkg-binaries restored from cache, skipping build :)"
             fi
