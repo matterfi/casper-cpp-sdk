@@ -44,9 +44,9 @@ commands:
       docker-image:
         type: string
     steps:
-      #- restore_cache:
-      #    name: "restore cache vcpkg binaries"
-      #    key: *cache_vcpkg_lin
+      - restore_cache:
+          name: "restore cache vcpkg binaries"
+          key: *cache_vcpkg_lin
       - run:
           name: "configure vcpkg & build deps"
           no_output_timeout: 40m
