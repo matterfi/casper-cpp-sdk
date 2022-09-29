@@ -29,7 +29,7 @@ executors:
       
 commands:
   cmd_lin_build_vcpkg:
-    description: "command to build vcpkg deps"
+    description: "command to build vcpkg deps (on host)"
     steps:
       - restore_cache:
           name: "restore cache vcpkg binaries"
@@ -60,22 +60,33 @@ commands:
           paths:
             - <<pipeline.parameters.path_vcpkg_bin_lin>>
   cmd_lin_build:
-    description: "command to build product"
+    description: "command to build product (in docker)"
+    parameters:
+      docker-image:
+        type: string
     steps:
       - run:
-          name: build casper-cpp-sdk
-          working_directory: "~/"
+          name: start container
           command: |
-            cd project
-            mkdir build && cd build
-
-            cmake -GNinja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_TOOLCHAIN_FILE=<<pipeline.parameters.path_vcpkg_bin_lin>>/scripts/buildsystems/vcpkg.cmake \
-              -DVCPKG_TARGET_TRIPLET=x64-linux \
-              -DCASPER_SDK_TESTS=ON ..
-
-            cmake --build .
+            docker run \
+              -dit \
+              --name dck-executor \
+              --mount type=bind,src=/home/circleci/project,dst=/home/src,readonly \
+              --mount type=bind,src=<<pipeline.parameters.path_vcpkg_bin_lin>>,dst=/home/vcpkg,readonly \
+              --mount type=bind,src=/home/circleci/build,dst=/home/build \
+              <<parameters.docker-image>>
+      - run:
+          name: configure
+          command: |
+            docker exec dck-executor \
+              -w /home/build \
+              cmake -GNinja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=/home/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-linux -DCASPER_SDK_TESTS=ON /home/src/
+      - run:
+          name: build
+          command: |
+            docker exec dck-executor \
+              -w /home/build \
+              cmake --build .
 
 jobs:
   build-linux:
@@ -86,7 +97,8 @@ jobs:
     steps:
       - checkout
       - cmd_lin_build_vcpkg
-      - cmd_lin_build
+      - cmd_lin_build:
+          docker-image: <<parameters.docker-image>>
 
 workflows:
   casper-cpp-sdk-linux:
