@@ -28,21 +28,8 @@ executors:
     resource_class: medium
       
 commands:
-  cmd_lin_prepare_env:
-    description: "command to prepare basic build env"
-    parameters:
-      docker-image:
-        type: string
-    steps:
-      #- run:
-      #    name: "pull docker image"
-      #    command: docker pull <<parameters.docker-image>>
-      - checkout
   cmd_lin_build_vcpkg:
     description: "command to build vcpkg deps"
-    parameters:
-      docker-image:
-        type: string
     steps:
       - restore_cache:
           name: "restore cache vcpkg binaries"
@@ -72,6 +59,24 @@ commands:
           key: *cache_vcpkg_lin
           paths:
             - <<pipeline.parameters.path_vcpkg_bin_lin>>
+    cmd_lin_build:
+      description: "command to build product"
+      steps:
+        run:
+          name: build casper-cpp-sdk
+          working_directory: "~/"
+          command: |
+            cd project
+            mkdir build && cd build
+
+            cmake -GNinja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_TOOLCHAIN_FILE=<<pipeline.parameters.path_vcpkg_bin_lin>>/scripts/buildsystems/vcpkg.cmake \
+              -DVCPKG_TARGET_TRIPLET=x64-linux \
+              -DCASPER_SDK_TESTS=ON ..
+
+            cmake --build .
+
 jobs:
   build-linux:
     parameters:
@@ -79,10 +84,9 @@ jobs:
         type: string
     executor: executor_ubuntu_small
     steps:
-      - cmd_lin_prepare_env:
-          docker-image: <<parameters.docker-image>>
-      - cmd_lin_build_vcpkg:
-          docker-image: <<parameters.docker-image>>
+      - checkout
+      - cmd_lin_build_vcpkg
+      - cmd_lin_build
 
 workflows:
   casper-cpp-sdk-linux:
