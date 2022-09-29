@@ -59,10 +59,10 @@ commands:
           key: *cache_vcpkg_lin
           paths:
             - <<pipeline.parameters.path_vcpkg_bin_lin>>
-    cmd_lin_build:
-      description: "command to build product"
-      steps:
-        run:
+  cmd_lin_build:
+    description: "command to build product"
+    steps:
+      - run:
           name: build casper-cpp-sdk
           working_directory: "~/"
           command: |
@@ -82,7 +82,7 @@ jobs:
     parameters:
       docker-image:
         type: string
-    executor: executor_ubuntu_small
+    executor: executor_ubuntu_large
     steps:
       - checkout
       - cmd_lin_build_vcpkg
