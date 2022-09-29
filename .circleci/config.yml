@@ -68,6 +68,7 @@ commands:
       - run:
           name: start container
           command: |
+            mkdir /home/circleci/build
             docker run \
               -dit \
               --name dck-executor \
