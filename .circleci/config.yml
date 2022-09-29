@@ -72,7 +72,7 @@ commands:
             docker run \
               -dit \
               --name dck-executor \
-              --mount type=bind,src=/home/circleci/project,dst=/home/src,readonly \
+              --mount type=bind,src=/home/circleci/project,dst=/home/src \
               --mount type=bind,src=<<pipeline.parameters.path_vcpkg_bin_lin>>,dst=/home/vcpkg,readonly \
               --mount type=bind,src=/home/circleci/build,dst=/home/build \
               <<parameters.docker-image>>
