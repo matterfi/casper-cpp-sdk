@@ -1,14 +1,15 @@
 #pragma once
+#include <cryptopp-pem/cryptopp/pem.h>
+#include <spdlog/spdlog.h>
+
 #include <cctype>
 #include <iostream>
 #include <vector>
-#include <spdlog/spdlog.h>
 
 #include "Types/KeyAlgo.h"
 #include "Utils/CEP57Checksum.h"
 #include "Utils/File.h"
 #include "Utils/StringUtil.h"
-#include <cryptopp/pem.h>
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -83,9 +84,10 @@ struct PublicKey {
         return PublicKey(rawBytes, KeyAlgo::ED25519);
       }
     } catch (std::exception& e) {
-        SPDLOG_ERROR("Unsupported key format or it's not a public key PEM object.");
+      SPDLOG_ERROR(
+          "Unsupported key format or it's not a public key PEM object.");
     }
-      return {};
+    return {};
   }
 
   /// <summary>
@@ -133,8 +135,10 @@ struct PublicKey {
     try {
       int expectedPublicKeySize = KeyAlgo::GetKeySizeInBytes(keyAlgo) - 1;
       if (rawBytes.size() != expectedPublicKeySize) {
-        SPDLOG_ERROR("rawBytes.size(): {} different than expectedPublicKeySize: {}. For keyAlgo: {}", rawBytes.size(),
-                     expectedPublicKeySize, KeyAlgo::GetName(keyAlgo));
+        SPDLOG_ERROR(
+            "rawBytes.size(): {} different than expectedPublicKeySize: {}. For "
+            "keyAlgo: {}",
+            rawBytes.size(), expectedPublicKeySize, KeyAlgo::GetName(keyAlgo));
 
         throw std::runtime_error(
             "Wrong public key format. Expected length is " +
