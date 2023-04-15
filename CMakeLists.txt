@@ -12,7 +12,7 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "/EHsc /bigobj")
     set(CMAKE_EXE_LINKER_FLAGS "/MTd")
 else()
-    set(CMAKE_CXX_FLAGS "-Werror -Wno-missing-declarations -pedantic -O3 -fPIC")
+    set(CMAKE_CXX_FLAGS "-Werror -Wno-missing-declarations -Wno-deprecated-declarations -pedantic -O3 -fPIC")
 endif()
 
 # TODO the rest of deps should be moved outside of the project too (if possible)
