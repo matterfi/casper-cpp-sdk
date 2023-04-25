@@ -28,7 +28,13 @@ namespace Casper {
 
     std::string CryptoUtil::timeToRFC3339(time_t time) {
         std::tm tm;
+        
+        #ifdef _WIN32
+        localtime_s(&tm, &time);
+        #else
         localtime_r(&time, &tm);
+        #endif
+        
         char buffer[32];
         std::strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%S%z", &tm);
         return std::string(buffer);
