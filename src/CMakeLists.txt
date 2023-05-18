@@ -30,6 +30,11 @@ add_library(${LIB_NAME} STATIC
     include/ByteSerializers/BaseByteSerializer.cpp
 )
 
+target_compile_definitions(${LIB_NAME}
+        PRIVATE
+        CPPHTTPLIB_USE_POLL=true
+)
+
 # openssl comes from vcpkg or system
 # cryptopp-static comes from vcpkg or system
 # cryptopp_pem comes from local source tree
