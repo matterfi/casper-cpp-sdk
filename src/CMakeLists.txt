@@ -32,7 +32,7 @@ add_library(${LIB_NAME} STATIC
 
 target_compile_definitions(${LIB_NAME}
     PRIVATE
-    $<$<PLATFORM_ID:Darwin>:CPPHTTPLIB_USE_POLL=true>
+    $<$<PLATFORM_ID:Darwin,Linux>:CPPHTTPLIB_USE_POLL=true>
 )
 
 # openssl comes from vcpkg or system
