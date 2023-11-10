@@ -82,8 +82,9 @@ class JsonRpcClient {
     {
       SPDLOG_ERROR("Invalid id type!");
     }
-    
-    SPDLOG_DEBUG("Calling: {} method with id: {} and params: {} ", name, id_str, params);
+
+    SPDLOG_DEBUG("Calling: {} method with id: {} and params: {} ", name, id_str,
+                 params.get<std::string>());
 
     if (v == version::v2) {
       j["jsonrpc"] = "2.0";
