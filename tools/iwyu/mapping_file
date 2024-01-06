@@ -1,0 +1,22 @@
+[
+{ "include": ["@<nlohmann/.*>", "private", "<nlohmann/json.hpp>", "public"] },
+{ "include": ["<bits/chrono.h>", "private", "<chrono>", "public"] },
+{ "include": ["<bits/exception.h>", "private", "<stdexcept>", "public"] },
+{ "include": ["<bits/std_thread.h>", "private", "<thread>", "public"] },
+{ "include": ["<bits/this_thread_sleep.h>", "private", "<thread>", "public"] },
+{ "include": ["<bits/utility.h>", "private", "<utility>", "public"] },
+{ "include": ["<bits/memory_resource.h>", "private", "<memory_resource>", "public"] },
+{ "include": ["<ext/alloc_traits.h>", "private", "<memory>", "public"] },
+{ "include": ["<ext/new_allocator.h>", "private", "<new>", "public"] },
+{ "include": ["<ext/type_traits.h>", "private", "<type_traits>", "public"] },
+{ "include": ["<pstl/glue_numeric_impl.h>", "private", "<numeric>", "public"] },
+{ "symbol": ["__forced_unwind", "private", "<stdexcept>", "public"] },
+{ "symbol": ["int8_t", "private", "<cstdint>", "public"] },
+{ "symbol": ["uint8_t", "private", "<cstdint>", "public"] },
+{ "symbol": ["int16_t", "private", "<cstdint>", "public"] },
+{ "symbol": ["uint16_t", "private", "<cstdint>", "public"] },
+{ "symbol": ["int32_t", "private", "<cstdint>", "public"] },
+{ "symbol": ["uint32_t", "private", "<cstdint>", "public"] },
+{ "symbol": ["int64_t", "private", "<cstdint>", "public"] },
+{ "symbol": ["uint64_t", "private", "<cstdint>", "public"] }
+]

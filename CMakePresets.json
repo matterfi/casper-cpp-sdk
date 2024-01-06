@@ -1,0 +1,89 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 26,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Default",
+            "description": "Default build using Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BUILD_SHARED_LIBS": "ON",
+                "CASPERSDK_DEBUG_BUILD": "ON",
+                "CASPERSDK_PEDANTIC_BUILD": "OFF",
+                "CMAKE_UNITY_BUILD": "ON"
+            }
+        },
+        {
+            "name": "vcpkg",
+            "inherits": "default",
+            "toolchainFile":
+                "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        },
+        {
+            "name": "tidy",
+            "displayName": "clang-tidy",
+            "description": "Run clang-tidy",
+            "inherits": "default",
+            "cacheVariables": {
+                "CASPERSDK_CLANG_TIDY": "ON"
+            }
+        },
+        {
+            "name": "iwyu",
+            "displayName": "iwyu",
+            "description": "configure build for include-what-you-use ci check",
+            "inherits": "default",
+            "cacheVariables": {
+                "BUILD_SHARED_LIBS": "ON",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CASPERSDK_IWYU": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "hidden": true,
+            "name": "ninja",
+            "nativeToolOptions": [
+                "-k 0"
+            ]
+        },
+        {
+            "name": "default",
+            "configurePreset": "default",
+            "inherits": [
+                "ninja"
+            ]
+        },
+        {
+            "name": "vcpkg",
+            "configurePreset": "vcpkg",
+            "inherits": [
+                "ninja"
+            ]
+        },
+        {
+            "name": "tidy",
+            "configurePreset": "tidy",
+            "inherits": [
+                "ninja"
+            ]
+        },
+        {
+            "name": "iwyu",
+            "configurePreset": "iwyu",
+            "inherits": [
+                "ninja"
+            ]
+        }
+    ]
+}

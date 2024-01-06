@@ -1,5 +1,5 @@
 # Casper C++ SDK
-Casper C++ SDK provides an interface to establish a connection between the Casper Blockchain and a client. Currently, the SDK is compatible with Linux systems.
+Casper C++ SDK provides an interface to establish a connection between the Casper Blockchain and a client.
 
 ## Dependencies
 1. [CMake Version 3.0.0 or newer](https://cmake.org)
@@ -7,15 +7,11 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 3. [OpenSSL Version 1.1.1 or newer](https://www.openssl.org)
 4. [cryptopp Version 8.6.0 or newer](https://www.cryptopp.com/)
 
-## How to clone the SDK
-
-    git clone https://github.com/yusufketen/casper-cpp-sdk.git
-
 ## Install Instructions for Dependencies
 
-    sudo apt-get install build-essential cmake libssl-dev
-    sudo apt-get install graphviz
-    sudo apt-get install doxygen
+    sudo apt update
+    sudo apt install build-essential cmake libssl-dev graphviz doxygen ninja-build libspdlog-dev
+
 ## Install Spdlog
 
 ```
@@ -29,7 +25,6 @@ cmake -DCMAKE_CXX_FLAGS=-fPIC .. && make -j && sudo make install
 ```
 sudo dnf install spdlog-devel
 ```
-**TODO** cryptopp for Fedora-based distros.
 
 ### Install instructions for doxygen for CentOS
 On CentOS and Rocky Linux:
@@ -38,37 +33,39 @@ On CentOS and Rocky Linux:
     sudo dnf install doxygen
 
 ### Install instructions for vcpkg
-Can be used for Windows, Linux and MacOS (fix your paths in the examples)  
+Can be used for Windows, Linux and MacOS (fix your paths in the examples)
 
 #### Prepare vcpkg:
-    git clone git@github.com:microsoft/vcpkg.git
+    git clone https://github.com/microsoft/vcpkg.git
     cd vcpkg
     git checkout 2022.08.15
     ./bootstrap-vcpkg.sh
+    sudo apt-get install pkg-config
 
 #### Install necessary libraries for Fedora 35:
     sudo dnf update && sudo dnf upgrade
     sudo reboot
-    sudo dnf install kernel-headers kernel-devel autoconf-archive mesa-libGLU-devel R 'xcb-util-*-devel' libxkbcommon-x11-devel libxkbcommon-devel 
-    sudo yum install perl-IPC-Cmd 
+    sudo dnf install kernel-headers kernel-devel autoconf-archive mesa-libGLU-devel R 'xcb-util-*-devel' libxkbcommon-x11-devel libxkbcommon-devel
+    sudo yum install perl-IPC-Cmd
 
 #### Build deps:
     windows:
     vcpkg install @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --triplet=x64-windows --clean-after-build
 
     linux:
-    ./vcpkg install @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
+    ./vcpkg install boost-algorithm boost-property-tree boost-variant cryptopp openssl spdlog --triplet=x64-linux --clean-after-build
 
     macos:
     ./vcpkg install @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --triplet=x64-osx --clean-after-build
 
 #### Export deps:
-    windows:  
-    vcpkg export @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --raw --triplet=x64-windows  --output-dir=mydir\vcpkg-bin-win-casper-cpp-sdk --output=01  
+    windows:
+    vcpkg export @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --raw --triplet=x64-windows  --output-dir=mydir\vcpkg-bin-win-casper-cpp-sdk --output=01
 
-    linux:  
+    linux:
+    ./vcpkg export boost-algorithm boost-property-tree boost-variant cryptopp openssl spdlog --raw --triplet=x64-linux --output-dir=mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
     ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
-        or an alternative way if above doesn't work:    
+        or an alternative way if above doesn't work:
     ./vcpkg export <list of packages from vcpkg.txt seperated by space> --raw --triplet=x64-linux --output-dir=/mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
 
     macos:
@@ -77,19 +74,19 @@ Can be used for Windows, Linux and MacOS (fix your paths in the examples)
 ## Building
 
 ### Debug
-Using deps from system (linux only)
+Using deps from system (linux only, need to install additional dependencies)
 
     mkdir build && cd build
     cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
     ninja
 
-Using deps from vcpkg (linux, windows, macos)
+Using deps from vcpkg (Linux, Windows, macOS)(Suggested)
 
     mkdir build && cd build
-    
+
     windows:
     cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-win-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows ..
-    
+
     linux:
     cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-lin-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-linux ..
 
@@ -115,7 +112,7 @@ Using deps from system (linux only)
 
 ## Run Examples
     mkdir build && cd build
-    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON ..
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_EXAMPLES=ON ..
     ninja
     ./examples/example
 
@@ -123,7 +120,7 @@ Using deps from system (linux only)
     mkdir build && cd build
     cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
     ninja
-    sudo make install
+    sudo ninja install
 
 ---
 ## How to integrate Casper C++ SDK into your project
@@ -159,7 +156,7 @@ Using deps from system (linux only)
 ## Documentation
     cd docs
     doxygen Doxyfile
-    
+
     The documentation will be available in the "docs/html/index.html" file.
 
 ## External Libraries
@@ -168,6 +165,8 @@ Using deps from system (linux only)
 3. https://github.com/yhirose/cpp-httplib
 4. https://github.com/weidai11/cryptopp
 5. https://github.com/Neargye/magic_enum
-6. https://github.com/codeinred/recursive-variant
 7. https://github.com/ckormanyos/wide-integer
 8. https://github.com/mity/acutest
+
+## Projects Built on Casper C++ SDK
+1. https://matterfi.com

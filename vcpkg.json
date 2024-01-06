@@ -1,0 +1,20 @@
+{
+    "$schema":
+        "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+    "name": "caspersdk",
+    "version": "1.0.0",
+    "dependencies": [
+        "boost-variant",
+        "brotli",
+        "cryptopp",
+        "magic-enum",
+        "openssl",
+        "otcommon",
+        "spdlog",
+        "zlib",
+        {
+            "name": "vcpkg-cmake",
+            "host": true
+        }
+    ]
+}
