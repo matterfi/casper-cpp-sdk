@@ -11,10 +11,6 @@
         "openssl",
         "otcommon",
         "spdlog",
-        "zlib",
-        {
-            "name": "vcpkg-cmake",
-            "host": true
-        }
+        "zlib"
     ]
 }
