@@ -28,7 +28,7 @@ project(CasperSDK VERSION 1.0.0)
 
 find_package(
   otcommon
-  2
+  3
   CONFIG
   REQUIRED
 )

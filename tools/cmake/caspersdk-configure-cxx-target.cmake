@@ -1,7 +1,7 @@
 function(caspersdk_configure_cxx_target target_name)
   include(otcommon-configure-target)
   include(otcommon-define-signed-overflow)
-  otcommon_configure_cxx_target(${target_name})
+  otcommon_configure_target_cxx(${target_name})
   otcommon_define_signed_overflow(${target_name})
 
   if(MSVC)
