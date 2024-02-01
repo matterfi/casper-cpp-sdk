@@ -7,6 +7,7 @@ set(SOURCES
     ${SRC_PATH}/cryptopp/pem_read.cpp
     ${SRC_PATH}/cryptopp/pem_common.cpp)
 add_library(cryptopp_pem STATIC ${SOURCES})
+otcommon_configure_target_external(cryptopp_pem)
 target_include_directories(cryptopp_pem PUBLIC ${SRC_PATH})
 target_link_libraries(cryptopp_pem
     PUBLIC
