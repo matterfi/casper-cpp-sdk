@@ -1,15 +1,28 @@
 macro(caspersdk_install)
   if(CASPERSDK_STANDALONE)
-    install(
-      TARGETS casper_sdk casper_sdk_cryptopp
-      DESTINATION "${CASPERSDK_LIBRARY_INSTALL_PATH}"
-      EXPORT CasperSDK
-      COMPONENT caspersdk_library
-      FILE_SET HEADERS
-      DESTINATION "${CASPERSDK_HEADER_INSTALL_PATH}"
-      INCLUDES
-      DESTINATION "${CASPERSDK_HEADER_INSTALL_PATH}"
-    )
+    if(CASPERSDK_MULTICONFIG)
+      install(
+        TARGETS casper_sdk casper_sdk_cryptopp
+        EXPORT CasperSDK
+        FILE_SET HEADERS
+        DESTINATION "${CASPERSDK_HEADER_INSTALL_PATH}"
+        INCLUDES
+        DESTINATION "${CASPERSDK_HEADER_INSTALL_PATH}"
+        LIBRARY DESTINATION "${CASPERSDK_LIBRARY_INSTALL_PATH}/$<CONFIG>"
+        ARCHIVE DESTINATION "${CASPERSDK_LIBRARY_INSTALL_PATH}/$<CONFIG>"
+      )
+    else()
+      install(
+        TARGETS casper_sdk casper_sdk_cryptopp
+        EXPORT CasperSDK
+        FILE_SET HEADERS
+        DESTINATION "${CASPERSDK_HEADER_INSTALL_PATH}"
+        INCLUDES
+        DESTINATION "${CASPERSDK_HEADER_INSTALL_PATH}"
+        LIBRARY DESTINATION "${CASPERSDK_LIBRARY_INSTALL_PATH}"
+        ARCHIVE DESTINATION "${CASPERSDK_LIBRARY_INSTALL_PATH}"
+      )
+    endif()
   endif()
 
   if(CASPERSDK_STANDALONE)

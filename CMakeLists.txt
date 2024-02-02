@@ -120,6 +120,11 @@ option(
   "Packing option to control whether or not license file is installed"
   ON
 )
+option(
+  CASPERSDK_MULTICONFIG
+  "Install libraries to multi-config paths"
+  OFF
+)
 
 if(NOT
    DEFINED
