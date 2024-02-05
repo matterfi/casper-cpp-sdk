@@ -1,0 +1,66 @@
+#!/bin/bash
+
+ARCH="${1}"
+ANDROID_PLATFORM="android-33"
+
+CSPR_SDK_SRC="/home/cspr_sdk/src"
+CSPR_SDK_WORK="/tmp/build/cspr_sdk"
+CSPR_SDK_OUT="/home/cspr_sdk/output"
+
+mkdir -p "${CSPR_SDK_WORK}"
+chmod 777 "${CSPR_SDK_SRC}"
+chmod 777 "${CSPR_SDK_WORK}"
+chmod 777 "${CSPR_SDK_OUT}"
+
+if [ ! -d "${CSPR_SDK_OUT}" ]; then
+    echo "Output directory missing. Mount output directory at ${CSPR_SDK_OUT}"
+    exit 1
+fi
+
+if [ "${ARCH}" == "" ]; then
+    echo "Target architecture not set. Allowed values: arm64 arm x64 x86"
+    exit 1
+elif [ "${ARCH}" == "arm64" ]; then
+    :
+elif [ "${ARCH}" == "arm" ]; then
+    :
+elif [ "${ARCH}" == "x64" ]; then
+    :
+elif [ "${ARCH}" == "x86" ]; then
+    :
+else
+    echo "Unknown architecture: ${ARCH}"
+    echo "Allowed values: arm64 arm x64 x86"
+    exit 1
+fi
+
+set -e
+
+rm -rf "${CSPR_SDK_OUT}/"*
+
+export ANDROID_NDK_HOME=/opt/android-sdk-linux/ndk/26.0.10792818
+
+sudo dnf install -y curl zip unzip tar gcc-c++ perl-CPAN
+
+mkdir -p /home/vcpkg
+cd /home/vcpkg
+git clone https://github.com/microsoft/vcpkg .
+./bootstrap-vcpkg.sh
+export VCPKG_ROOT=/home/vcpkg
+export VCPKG_DEFAULT_TRIPLET=arm64-android
+
+echo ${VCPKG_ROOT}
+echo ${ANDROID_NDK_HOME}
+
+echo "Building csprsdk"
+rm -rf "${CSPR_SDK_OUT}/*"
+
+/opt/cmake/bin/cmake \
+    -S "${CSPR_SDK_SRC}" \
+    -B "${CSPR_SDK_WORK}" \
+    --preset "android-${ARCH}"
+
+/opt/cmake/bin/cmake --build "${CSPR_SDK_WORK}" -- -k 0
+/opt/cmake/bin/cmake --install "${CSPR_SDK_WORK}"
+
+cp ${CSPR_SDK_WORK}/libCasperSDK.so ${CSPR_SDK_OUT}

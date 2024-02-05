@@ -1,0 +1,21 @@
+FROM base AS build
+RUN --mount=type=tmpfs,target=/var/lib/apt/lists apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -qq install \
+    g++-12 \
+    gcc-12 \
+    git \
+    liblmdb-dev \
+    libprotobuf-dev \
+    libsecp256k1-dev \
+    libsimpleini-dev \
+    libsodium-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    libtbb-dev \
+    libzmq3-dev \
+    ninja-build \
+    protobuf-compiler \
+    python3-dev \
+    qtbase5-dev \
+    rsync \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12

@@ -1,0 +1,19 @@
+FROM base AS build
+RUN --mount=type=tmpfs,target=/var/cache/apk apk add \
+    g++ \
+    gcc \
+    git \
+    libsecp256k1-dev \
+    libsodium-dev \
+    lmdb-dev \
+    ninja-build \
+    onetbb-dev \
+    openssl-dev \
+    protobuf-dev \
+    python3-dev \
+    qt6-qtbase-dev \
+    rsync \
+    samurai \
+    sqlite-dev \
+    zeromq-dev
+COPY --from=simpleini-download /usr/src/simpleini/SimpleIni.h /usr/include

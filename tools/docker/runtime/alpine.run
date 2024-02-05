@@ -1,0 +1,12 @@
+FROM base AS run
+RUN --mount=type=tmpfs,target=/var/cache/apk apk add \
+    libsecp256k1 \
+    libsodium \
+    libbz2 \
+    lmdb \
+    onetbb \
+    openssl \
+    protobuf \
+    qt6-qtbase \
+    sqlite-libs \
+    zeromq
