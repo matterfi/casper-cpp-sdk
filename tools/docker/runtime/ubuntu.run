@@ -1,0 +1,24 @@
+FROM base AS run
+RUN --mount=type=tmpfs,target=/var/lib/apt/lists apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -qq install \
+    liblmdb0 \
+    libprotobuf-lite23 \
+    libqt5concurrent5 \
+    libqt5core5a \
+    libqt5dbus5 \
+    libqt5gui5 \
+    libqt5network5 \
+    libqt5opengl5 \
+    libqt5opengl5-dev \
+    libqt5printsupport5 \
+    libqt5sql5 \
+    libqt5sql5-sqlite \
+    libqt5svg5 \
+    libqt5test5 \
+    libqt5widgets5 \
+    libqt5xml5 \
+    libsecp256k1-0 \
+    libsodium23 \
+    libsqlite3-0 \
+    libtbb12 \
+    libzmq5

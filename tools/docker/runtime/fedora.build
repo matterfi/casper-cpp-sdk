@@ -1,0 +1,18 @@
+FROM base AS build
+RUN --mount=type=tmpfs,target=/var/cache/dnf dnf install -y \
+    gcc \
+    gcc-c++ \
+    git \
+    libsecp256k1-devel \
+    libsodium-devel \
+    lmdb-devel \
+    ninja-build \
+    openssl-devel \
+    protobuf-compiler \
+    protobuf-lite-devel \
+    qt6-qtbase-devel \
+    rsync \
+    sqlite-devel \
+    tbb-devel \
+    zeromq-devel
+COPY --from=simpleini-download /usr/src/simpleini/SimpleIni.h /usr/include

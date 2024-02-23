@@ -19,9 +19,32 @@ list(
   CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake"
 )
+
+if (VCPKG_TARGET_ANDROID)
+    cmake_policy(SET CMP0144 NEW)
+    include("tools/cmake/vcpkg_android.cmake")
+endif()
+
 include(caspersdk-set-osx-deployment-target)
 caspersdk_set_osx_deployment_target(13.4)
 project(CasperSDK VERSION 1.0.0)
+
+if (VCPKG_TARGET_ANDROID)
+    message("Adding symlinks, vcpkg installed directory: ${VCPKG_INSTALLED_DIR}")
+
+    set(SYMLINK_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/cryptopp/CryptoPPConfig.cmake")
+    set(TARGET_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/cryptopp/cryptoppConfig.cmake")
+
+    # Create the symbolic link
+    execute_process(
+        COMMAND "${CMAKE_COMMAND}" -E create_symlink "${TARGET_DIR}" "${SYMLINK_DIR}"
+        RESULT_VARIABLE result
+    )
+    if(NOT result EQUAL 0)
+        message(FATAL_ERROR "Failed to create symbolic link: ${SYMLINK_DIR} -> ${TARGET_DIR}")
+    endif()
+endif()
+
 
 # -----------------------------------------------------------------------------
 # Setup
@@ -35,7 +58,6 @@ find_package(
 otcommon_set_build_type()
 otcommon_require_out_of_source_build()
 otcommon_set_rpath()
-
 # -----------------------------------------------------------------------------
 # Set option defaults
 

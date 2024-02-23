@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1
+
+FROM build AS opentxs
+ENV Boost_ROOT=/opt/boost
+ENV otcommon_ROOT=/opt/otcommon
+ENV CsLibGuarded_ROOT=/opt/libguarded
+ENV CMakeRC_ROOT=/opt/cmakerc
+COPY --from=boost /opt/boost /opt/boost
+COPY --from=cmake /opt/cmake /opt/cmake
+COPY --from=otcommon /opt/otcommon /opt/otcommon
+COPY --from=libguarded /opt/libguarded /opt/libguarded
+COPY --from=cmakerc /opt/cmakerc /opt/cmakerc
+COPY --from=opentxs-download /usr/src/opentxs /usr/src/opentxs
+ARG OT_CMAKE_ARGS
+RUN --mount=type=tmpfs,target=/tmp/opentxs /opt/cmake/bin/cmake \
+        -S /usr/src/opentxs \
+        -B /tmp/opentxs \
+        --preset prod \
+        -DCMAKE_INSTALL_PREFIX=/opt/opentxs \
+        -DBUILD_SHARED_LIBS=ON \
+        -DOPENTXS_PEDANTIC_BUILD=OFF \
+        -DCMAKE_C_FLAGS="-O2" \
+        -DCMAKE_CXX_FLAGS="-O2" \
+        -DOT_STORAGE_SQLITE=OFF \
+        ${OT_CMAKE_ARGS} \
+    && /opt/cmake/bin/cmake --build /tmp/opentxs \
+    && /opt/cmake/bin/cmake --install /tmp/opentxs

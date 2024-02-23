@@ -1,0 +1,4 @@
+# syntax=docker/dockerfile:1
+
+FROM tools AS cmake-bootstrap
+RUN --mount=type=tmpfs,target=/var/cache/dnf dnf install -y cmake

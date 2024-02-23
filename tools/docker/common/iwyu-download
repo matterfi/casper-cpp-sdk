@@ -1,0 +1,7 @@
+# syntax=docker/dockerfile:1
+
+FROM download AS iwyu-download
+ARG IWYU_COMMIT_HASH
+RUN --mount=type=ssh git clone --recursive "https://github.com/include-what-you-use/include-what-you-use" /usr/src/iwyu \
+    && cd /usr/src/iwyu \
+    && git reset --hard "${IWYU_COMMIT_HASH}"
