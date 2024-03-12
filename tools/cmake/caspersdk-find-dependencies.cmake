@@ -14,7 +14,7 @@ if(CASPERSDK_USE_VCPKG_TARGETS)
     REQUIRED
   )
   find_package(
-    CryptoPP
+    cryptopp
     CONFIG
     REQUIRED
   )
