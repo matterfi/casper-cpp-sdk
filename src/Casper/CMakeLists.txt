@@ -5,10 +5,6 @@ add_subdirectory(Types)
 add_subdirectory(Utils)
 
 target_sources(casper_sdk-common PRIVATE "Base.cpp" "CasperClient.cpp")
-target_compile_definitions(
-  casper_sdk-common
-  PRIVATE $<$<PLATFORM_ID:Darwin,Linux>:CPPHTTPLIB_USE_POLL=true>
-)
 
 caspersdk_add_public_header("" "Base.h")
 caspersdk_add_public_header("" "CasperClient.h")
