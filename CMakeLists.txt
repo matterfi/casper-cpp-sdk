@@ -20,31 +20,45 @@ list(
   "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake"
 )
 
-if (VCPKG_TARGET_ANDROID)
-    cmake_policy(SET CMP0144 NEW)
-    include("tools/cmake/vcpkg_android.cmake")
+if(VCPKG_TARGET_ANDROID)
+  cmake_policy(
+    SET
+    CMP0144
+    NEW
+  )
+  include("tools/cmake/vcpkg_android.cmake")
 endif()
 
 include(caspersdk-set-osx-deployment-target)
 caspersdk_set_osx_deployment_target(13.4)
 project(CasperSDK VERSION 1.0.0)
 
-if (VCPKG_TARGET_ANDROID)
-    message("Adding symlinks, vcpkg installed directory: ${VCPKG_INSTALLED_DIR}")
+if(VCPKG_TARGET_ANDROID)
+  message("Adding symlinks, vcpkg installed directory: ${VCPKG_INSTALLED_DIR}")
 
-    set(SYMLINK_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/cryptopp/CryptoPPConfig.cmake")
-    set(TARGET_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/cryptopp/cryptoppConfig.cmake")
+  set(SYMLINK_DIR
+      "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/cryptopp/CryptoPPConfig.cmake"
+  )
+  set(TARGET_DIR
+      "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/cryptopp/cryptoppConfig.cmake"
+  )
 
-    # Create the symbolic link
-    execute_process(
-        COMMAND "${CMAKE_COMMAND}" -E create_symlink "${TARGET_DIR}" "${SYMLINK_DIR}"
-        RESULT_VARIABLE result
+  # Create the symbolic link
+  execute_process(
+    COMMAND "${CMAKE_COMMAND}" -E create_symlink "${TARGET_DIR}"
+            "${SYMLINK_DIR}" RESULT_VARIABLE result
+  )
+  if(NOT
+     result
+     EQUAL
+     0
+  )
+    message(
+      FATAL_ERROR
+        "Failed to create symbolic link: ${SYMLINK_DIR} -> ${TARGET_DIR}"
     )
-    if(NOT result EQUAL 0)
-        message(FATAL_ERROR "Failed to create symbolic link: ${SYMLINK_DIR} -> ${TARGET_DIR}")
-    endif()
+  endif()
 endif()
-
 
 # -----------------------------------------------------------------------------
 # Setup
@@ -271,6 +285,11 @@ set_target_properties(
     VERSION "1.0.0"
     SOVERSION 1
 )
+
+if(NOT WIN32)
+  target_compile_definitions(casper_sdk INTERFACE CPPHTTPLIB_USE_POLL=true)
+endif()
+
 add_library(casper_sdk-common OBJECT "")
 add_library(casper_sdk_cryptopp OBJECT "")
 target_include_directories(
