@@ -220,7 +220,7 @@ caspersdk_print_build_details()
 # -----------------------------------------------------------------------------
 # Dependencies
 
-if(CASPERSDK_STATIC_DEPENDENCIES)
+if(CASPERSDK_STATIC_DEPENDENCIES AND NOT ANDROID)
   set(OPENSSL_USE_STATIC_LIBS ON)
 else()
   set(OPENSSL_USE_STATIC_LIBS OFF)
